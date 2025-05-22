@@ -15,7 +15,7 @@ export const formatReportList = (
 ): string => {
   const trimmedItems = items.split("\n").filter((item) => item.trim());
   if (trimmedItems.length === 0) {
-    return "- Nenhum.";
+    return "- Nenhum;";
   }
 
   return trimmedItems
@@ -25,8 +25,8 @@ export const formatReportList = (
       formattedItem =
         formattedItem.charAt(0).toUpperCase() + formattedItem.slice(1);
       // Add a period if not present
-      if (!formattedItem.endsWith(".")) {
-        formattedItem += ".";
+      if (!formattedItem.endsWith(";")) {
+        formattedItem += ";";
       }
 
       const lines: string[] = [];
