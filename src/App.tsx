@@ -24,9 +24,13 @@ setDefaultLocale("pt-BR");
 
 function App() {
   // State variables for form fields
-  const [date, setDate] = useState<string>(
-    new Date().toISOString().split("T")[0]
-  );
+  const [date, setDate] = useState<string>(() => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  });
   const [squad, setSquad] = useState<string>("");
   const [sprint, setSprint] = useState<string>("");
   const [progressText, setProgressText] = useState<string>("");
@@ -157,10 +161,18 @@ ${formatReportList(problemsText, maxLineLength, indent)}`;
           <FormDatePicker
             id="date"
             label="Data"
-            selectedDate={new Date(date)}
+            selectedDate={new Date(`${date}T00:00:00`)}
             onChange={(selectedDate) => {
-              if (selectedDate)
-                setDate(selectedDate.toISOString().split("T")[0]);
+              if (selectedDate) {
+                const utcDate = new Date(
+                  selectedDate.getTime() -
+                    selectedDate.getTimezoneOffset() * 60000
+                );
+                const year = utcDate.getFullYear();
+                const month = String(utcDate.getMonth() + 1).padStart(2, "0");
+                const day = String(utcDate.getDate()).padStart(2, "0");
+                setDate(`${year}-${month}-${day}`);
+              }
             }}
             dateFormat="dd/MM/yyyy"
             className="date-input"
