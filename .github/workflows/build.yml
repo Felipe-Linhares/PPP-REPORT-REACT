@@ -1,55 +1,60 @@
+# .github/workflows/deploy.yml
+
 name: Deploy to GitHub Pages
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main # Aciona o workflow em push para o branch 'main'
+  workflow_dispatch: # Permite acionar o workflow manualmente na interface do GitHub
 
-# Update permissions block
+# Permissões necessárias para que o GitHub Actions possa fazer o deploy nas Pages
 permissions:
-  contents: write
-  pages: write
-  id-token: write
-  actions: write
-  deployments: write
+  contents: read # Permissão para ler o código do repositório
+  pages: write   # Permissão para escrever no repositório de Pages (CRÍTICO para o deploy)
+  id-token: write # Permissão necessária para autenticação OIDC com as Actions de Pages
 
 jobs:
+  # Job para construir a aplicação
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # O sistema operacional que o job vai rodar
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4 # Faz o checkout do seu repositório
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
-          cache: "npm"
+          node-version: '18' # Use a versão do Node.js que você usa (18 ou 20 são comuns)
+          cache: 'npm'       # Habilita o cache de dependências do npm
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Install Dependencies
+        run: npm ci # 'npm ci' é recomendado em ambientes de CI/CD para installs limpos
 
-      - name: Build project
-        run: npm run build
+      - name: Build Project
+        run: npm run build # Roda o script de build do Vite
 
       - name: Setup Pages
-        uses: actions/configure-pages@v4
-        with:
-          enablement: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+        uses: actions/configure-pages@v4 # Configura o ambiente de Pages
+        # Nota: 'token: ${{ secrets.GITHUB_TOKEN }}' não é mais explicitamente necessário
+        # se as permissões 'pages: write' e 'id-token: write' estiverem no nível do workflow.
+        # A Action já usa o GITHUB_TOKEN por padrão.
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3 # Faz upload dos arquivos de build como um artefato
         with:
-          path: "./dist"
+          path: './dist' # A pasta que contém os arquivos de build
 
+  # Job para fazer o deploy usando o artefato construído
   deploy:
-    needs: build
-    runs-on: ubuntu-latest
     environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      name: github-pages # Define o ambiente de deploy como 'github-pages'
+      url: ${{ steps.deployment.outputs.page_url }} # URL da página publicada
+    runs-on: ubuntu-latest
+    needs: build # Garante que este job só rode após o job 'build' ser concluído com sucesso
 
     steps:
       - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+        id: deployment # Define um ID para o step para poder referenciar sua saída
+        uses: actions/deploy-pages@v4 # A Action que efetivamente publica os arquivos
