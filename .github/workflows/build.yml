@@ -3,10 +3,13 @@ name: Deploy to GitHub Pages
 on:
   workflow_dispatch:
 
+# Update permissions block
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
+  actions: write
+  deployments: write
 
 jobs:
   build:
@@ -31,7 +34,8 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
         with:
-          enablement: true # Add this line to enable Pages
+          enablement: true
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
