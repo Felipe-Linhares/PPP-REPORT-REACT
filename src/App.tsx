@@ -96,7 +96,7 @@ function App() {
 
     // Format date from YYYY-MM-DD to DD/MM/YYYY
     const [year, month, day] = date.split("-");
-    const formattedDate = `${day}/${month}/${year}`; // <-- ESTA É A LINHA CORRETA!
+    const formattedDate = `${day}/${month}/${year}`;
 
     return `PPP REPORT
 DATA: ${formattedDate}
@@ -228,7 +228,7 @@ ${formatReportList(problemsText, maxLineLength, indent)}`;
           </div>
         </div>
 
-        {/* ReportPreview renderiza seu próprio h1, botões e texto */}
+ 
         <ReportPreview
           reportContent={reportContent}
           isCopied={isCopied}
