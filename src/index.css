@@ -50,7 +50,6 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
-  overflow: hidden;
 }
 
 /* Container for the main layout grid */
